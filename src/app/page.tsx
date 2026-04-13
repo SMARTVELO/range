@@ -94,6 +94,7 @@ interface Hotel {
   allergyInfo: AllergyInfo;
   rooms: RoomType[];
   reviews: Review[];
+  image: string;
   gradient: string;
   imageIcon: React.ReactNode;
 }
@@ -172,6 +173,7 @@ const HOTELS: Hotel[] = [
       { id: "rv1-4", author: "James L.", date: "2025-08-18", rating: 8, allergyType: "mold", title: "Clean, dry, and mold-free", content: "The humidity control system is excellent. No musty smells anywhere, and I could feel the difference in air quality immediately. Only wish the breakfast had more variety." },
       { id: "rv1-5", author: "Sophie R.", date: "2025-07-05", rating: 10, allergyType: "essentialOils", title: "No hidden aromatherapy!", content: "So many 'natural' hotels use essential oils everywhere. Not Pure Air. They truly understand that natural doesn't mean safe for everyone. The allergen-free restaurant was outstanding." },
     ],
+    image: "/hotels/berlin.png",
     gradient: "from-blue-600 to-blue-800",
     imageIcon: <Building2 className="w-16 h-16 text-white/30" />,
   },
@@ -208,6 +210,7 @@ const HOTELS: Hotel[] = [
       { id: "rv2-3", author: "Claire D.", date: "2025-10-15", rating: 10, allergyType: "smoke", title: "Smoke-free bliss", content: "Completely smoke-free property, even outdoors near entrances. As a smoke-sensitive person, this was such a relief. The garden room was perfect." },
       { id: "rv2-4", author: "Hans W.", date: "2025-09-20", rating: 9, allergyType: "petDander", title: "No pets, no problem", content: "Strict no-pet policy is enforced, which is exactly what I needed. The room was spotless and I had zero allergy symptoms during my stay." },
     ],
+    image: "/hotels/amsterdam.png",
     gradient: "from-emerald-500 to-teal-700",
     imageIcon: <Building2 className="w-16 h-16 text-white/30" />,
   },
@@ -243,6 +246,7 @@ const HOTELS: Hotel[] = [
       { id: "rv3-2", author: "Ingrid B.", date: "2025-11-05", rating: 10, allergyType: "fragrance", title: "Pure Scandinavian excellence", content: "Everything about this hotel is thoughtful and safe. The organic restaurant is Michelin-worthy, the air quality is hospital-grade, and the staff truly understands allergies." },
       { id: "rv3-3", author: "Michael T.", date: "2025-10-12", rating: 9, allergyType: "latex", title: "Latex-free peace of mind", content: "Finally a hotel that takes latex allergies seriously. No latex gloves, latex-free mattresses, even the yoga mats in the gym are latex-free. Attention to detail is remarkable." },
     ],
+    image: "/hotels/copenhagen.png",
     gradient: "from-slate-600 to-slate-800",
     imageIcon: <Hotel className="w-16 h-16 text-white/30" />,
   },
@@ -278,6 +282,7 @@ const HOTELS: Hotel[] = [
       { id: "rv4-2", author: "Robert F.", date: "2025-11-18", rating: 9, allergyType: "mold", title: "Perfect for mold allergy", content: "The Swiss stone pine floors are naturally mold-resistant. The humidity control is excellent. I usually wake up congested at hotels but not here." },
       { id: "rv4-3", author: "Elena P.", date: "2025-10-25", rating: 10, allergyType: "fragrance", title: "Luxury without the scent", content: "So many luxury hotels overwhelm you with fragrances. Alpine Pure proves you can have five-star luxury without any scent at all. The Swiss pine suite smelled naturally wonderful." },
     ],
+    image: "/hotels/zurich.png",
     gradient: "from-red-600 to-rose-800",
     imageIcon: <MountainSnow className="w-16 h-16 text-white/30" />,
   },
@@ -313,6 +318,7 @@ const HOTELS: Hotel[] = [
       { id: "rv5-2", author: "Julia W.", date: "2025-10-30", rating: 7, allergyType: "fragrance", title: "Mostly good, lobby had a faint scent", content: "The room was perfect - no scents at all. But the lobby had a very faint cleaning product smell that I noticed. Room was great though, would stay again and ask for a room far from the lobby." },
       { id: "rv5-3", author: "Günter S.", date: "2025-09-14", rating: 9, allergyType: "smoke", title: "Smoke-free and proud", content: "Excellent smoke-free policy, enforced strictly. Great location on Mariahilfer Straße. Breakfast had good allergen-free options." },
     ],
+    image: "/hotels/vienna.png",
     gradient: "from-violet-600 to-purple-800",
     imageIcon: <Building2 className="w-16 h-16 text-white/30" />,
   },
@@ -348,6 +354,7 @@ const HOTELS: Hotel[] = [
       { id: "rv6-2", author: "Stefan L.", date: "2025-10-28", rating: 9, allergyType: "chemical", title: "Clay walls are magic", content: "The clay plaster walls genuinely make a difference in air quality. My MCS symptoms were minimal throughout my stay. The organic breakfast was divine." },
       { id: "rv6-3", author: "Petra M.", date: "2025-09-05", rating: 8, allergyType: "dustMite", title: "Charming and safe", content: "Beautiful old town location with solid allergy measures. The only minor thing is the old building means slightly less consistent temperature control, but the air quality is excellent." },
     ],
+    image: "/hotels/salzburg.png",
     gradient: "from-green-600 to-emerald-800",
     imageIcon: <Trees className="w-16 h-16 text-white/30" />,
   },
@@ -382,6 +389,7 @@ const HOTELS: Hotel[] = [
       { id: "rv7-1", author: "Marie-Claire D.", date: "2025-12-02", rating: 9, allergyType: "fragrance", title: "Paris without the perfume", content: "As a French woman with Duftstoffallergie, it's ironic that Paris is one of the hardest cities for me. Clean Air Boutique is an oasis. No perfumes anywhere, and the courtyard room blocks the city pollution." },
       { id: "rv7-2", author: "Jean-Pierre M.", date: "2025-11-15", rating: 8, allergyType: "latex", title: "Latex-free luxury", content: "Beautiful hotel with thoughtful latex-free protocols. The front desk even had latex-free gloves for handling luggage. The gluten-free croissants were surprisingly good!" },
     ],
+    image: "/hotels/paris.png",
     gradient: "from-pink-600 to-rose-800",
     imageIcon: <Building2 className="w-16 h-16 text-white/30" />,
   },
@@ -417,6 +425,7 @@ const HOTELS: Hotel[] = [
       { id: "rv8-2", author: "David S.", date: "2025-10-18", rating: 9, allergyType: "fragrance", title: "Mediterranean hospitality, allergy-safe", content: "Wonderful staff who really understand allergies. The allergen-free paella was delicious! The rooftop terrace was my favorite spot - fresh air and beautiful views." },
       { id: "rv8-3", author: "Ana B.", date: "2025-09-22", rating: 7, allergyType: "dustMite", title: "Good but ceramic floors are cold", content: "The allergy measures are solid - HEPA filters, organic bedding, no carpet. But the ceramic floors were quite cold in November. Bring slippers! Overall a good experience." },
     ],
+    image: "/hotels/barcelona.png",
     gradient: "from-orange-500 to-red-600",
     imageIcon: <Sun className="w-16 h-16 text-white/30" />,
   },
@@ -450,6 +459,7 @@ const HOTELS: Hotel[] = [
       { id: "rv9-1", author: "Frank B.", date: "2025-11-20", rating: 7, allergyType: "fragrance", title: "Basic but reliable", content: "Good for a budget option. No scents in the room, HEPA filter working. The breakfast allergen options are limited but the staff was accommodating." },
       { id: "rv9-2", author: "Sarah T.", date: "2025-10-10", rating: 6, allergyType: "smoke", title: "Smoke-free room but hallway smell", content: "The room itself was fine, but occasionally I could smell smoke from the designated smoking area outside. Not ideal for severe smoke sensitivity." },
     ],
+    image: "/hotels/frankfurt.png",
     gradient: "from-gray-500 to-slate-700",
     imageIcon: <Building2 className="w-16 h-16 text-white/30" />,
   },
@@ -485,6 +495,7 @@ const HOTELS: Hotel[] = [
       { id: "rv10-2", author: "Zsófia K.", date: "2025-11-12", rating: 8, allergyType: "fragrance", title: "Great Budapest stay", content: "Beautiful location on Andrássy Avenue, excellent allergy measures, and the Hungarian breakfast with allergen-free options was delicious. Would recommend." },
       { id: "rv10-3", author: "Peter H.", date: "2025-10-20", rating: 8, allergyType: "mold", title: "Thermal ventilation helps", content: "The thermal ventilation system keeps humidity very well controlled. No mold issues at all, which is impressive for a city with so many older buildings. Good value." },
     ],
+    image: "/hotels/budapest.png",
     gradient: "from-amber-500 to-orange-700",
     imageIcon: <Waves className="w-16 h-16 text-white/30" />,
   },
@@ -615,8 +626,12 @@ function HeroSection({ onSearch }: { onSearch: (destination: string, allergies: 
   return (
     <div className="relative">
       {/* Hero Background */}
-      <div className="bg-gradient-to-br from-[#003580] via-[#004a9f] to-[#00264d] text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20 sm:pt-16 sm:pb-28">
+      <div className="relative text-white">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#003580] via-[#004a9f] to-[#00264d]" />
+        <div className="absolute inset-0 opacity-20">
+          <img src="/hotels/hero.png" alt="" className="w-full h-full object-cover" />
+        </div>
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-20 sm:pt-16 sm:pb-28">
           <div className="text-center mb-10">
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
               Find Your <span className="text-[#f5ba42]">Safe</span> Stay
@@ -928,11 +943,12 @@ function HeroSection({ onSearch }: { onSearch: (destination: string, allergies: 
   );
 }
 
-function FeaturedHotelCard({ hotel }: { hotel: Hotel }) {
+function FeaturedHotelCard({ hotel, onClick }: { hotel: Hotel; onClick?: () => void }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all group">
-      <div className={`h-44 bg-gradient-to-br ${hotel.gradient} flex items-center justify-center relative`}>
-        {hotel.imageIcon}
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-all group cursor-pointer" onClick={onClick}>
+      <div className="h-44 relative overflow-hidden">
+        <img src={hotel.image} alt={hotel.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
         <div className="absolute top-3 right-3">
           <SafetyScoreBadge score={hotel.allergySafetyScore} />
         </div>
@@ -1223,8 +1239,9 @@ function HotelCard({ hotel, onSelect }: { hotel: Hotel; onSelect: () => void }) 
     >
       <div className="flex flex-col sm:flex-row">
         {/* Image */}
-        <div className={`sm:w-64 h-48 sm:h-auto bg-gradient-to-br ${hotel.gradient} flex items-center justify-center flex-shrink-0 relative`}>
-          {hotel.imageIcon}
+        <div className="sm:w-64 h-48 sm:h-auto relative overflow-hidden flex-shrink-0">
+          <img src={hotel.image} alt={hotel.name} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
           <button
             className="absolute top-3 left-3 p-2 bg-white/80 rounded-full hover:bg-white transition-colors"
             onClick={(e) => { e.stopPropagation(); }}
@@ -1322,7 +1339,6 @@ function HotelDetailView({
   onBook: (hotel: Hotel, room: RoomType) => void;
 }) {
   const [activeTab, setActiveTab] = useState<DetailTab>("overview");
-  const [photoIndex, setPhotoIndex] = useState(0);
   const [liked, setLiked] = useState(false);
 
   const avgRating = hotel.reviews.reduce((s, r) => s + r.rating, 0) / hotel.reviews.length;
@@ -1335,32 +1351,17 @@ function HotelDetailView({
     { id: "location", label: "Location" },
   ];
 
-  const gradients = [
-    hotel.gradient,
-    `from-amber-200 to-orange-300`,
-    `from-emerald-200 to-teal-300`,
-    `from-slate-200 to-gray-300`,
-  ];
-
   return (
     <div className="bg-white min-h-screen">
       {/* Hero Image */}
       <div className="relative">
-        <div className={`h-56 sm:h-72 md:h-80 bg-gradient-to-br ${gradients[photoIndex]} flex items-center justify-center transition-all duration-500`}>
-          <div className="text-white/20 text-8xl">{hotel.imageIcon}</div>
-        </div>
-
-        {/* Photo navigation */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-          {gradients.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setPhotoIndex(i)}
-              className={`w-2.5 h-2.5 rounded-full transition-colors ${
-                i === photoIndex ? "bg-white" : "bg-white/50"
-              }`}
-            />
-          ))}
+        <div className="h-56 sm:h-72 md:h-80 overflow-hidden">
+          <img
+            src={hotel.image}
+            alt={hotel.name}
+            className="w-full h-full object-cover transition-all duration-500"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
         </div>
 
         {/* Back button */}
@@ -1378,6 +1379,15 @@ function HotelDetailView({
         >
           <Heart className={`w-5 h-5 ${liked ? "text-red-500 fill-red-500" : "text-gray-600"}`} />
         </button>
+
+        {/* Hotel name overlay */}
+        <div className="absolute bottom-4 left-4 right-4">
+          <h1 className="text-xl sm:text-2xl font-bold text-white drop-shadow-lg">{hotel.name}</h1>
+          <div className="flex items-center gap-2 text-sm text-white/80 mt-1">
+            <MapPin className="w-4 h-4" />
+            {hotel.city}, {hotel.country}
+          </div>
+        </div>
       </div>
 
       {/* Hotel Header Info */}
@@ -1386,15 +1396,13 @@ function HotelDetailView({
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div>
               <div className="flex items-center gap-3 mb-1">
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{hotel.name}</h1>
                 <SafetyScoreBadge score={hotel.allergySafetyScore} />
+                <StarRating stars={hotel.stars} size="md" />
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-                <MapPin className="w-4 h-4" />
+              <div className="text-sm text-gray-500 mb-2">
                 {hotel.location}
               </div>
               <div className="flex items-center gap-3 flex-wrap">
-                <StarRating stars={hotel.stars} size="md" />
                 <span className="text-sm text-gray-500">
                   <span className="font-semibold text-gray-900">{avgRating.toFixed(1)}</span>/10 · {hotel.reviews.length} reviews
                 </span>
@@ -1973,8 +1981,8 @@ function BookingModal({
           <div className="p-6 space-y-5">
             {/* Hotel summary */}
             <div className="flex gap-3 p-3 bg-gray-50 rounded-xl">
-              <div className={`w-16 h-16 rounded-lg bg-gradient-to-br ${hotel.gradient} flex items-center justify-center flex-shrink-0`}>
-                <Building2 className="w-6 h-6 text-white/50" />
+              <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                <img src={hotel.image} alt={hotel.name} className="w-full h-full object-cover" />
               </div>
               <div>
                 <h3 className="font-semibold text-sm text-gray-900">{hotel.name}</h3>
