@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SafeStay — Allergy-Safe Hotel Booking Platform",
+  title: "SmartVelo Mobility — Range Assistant",
   description:
-    "Find certified allergy-safe hotels across Europe. Book accommodations specifically designed for travelers with fragrance sensitivity, MCS, dust mite allergies, and more.",
+    "Calculate how far your e-bike can take you. SmartVelo Mobility's interactive Range Assistant helps you estimate your e-bike range based on rider, bike, and environmental factors.",
 };
 
 export default function RootLayout({
@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-white text-gray-900">{children}</body>
+      <body className="min-h-full flex flex-col bg-[#F5F7FA] text-[#1A1A2E]">{children}</body>
     </html>
   );
 }

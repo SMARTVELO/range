@@ -78,9 +78,9 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Remove default focus outlines, add custom */
+/* SmartVelo focus outline - electric green */
 *:focus-visible {
-  outline: 2px solid #003580;
+  outline: 2px solid #00E676;
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -101,29 +101,29 @@ html {
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --background: #F5F7FA;
+  --foreground: #1A1A2E;
+  --card: #ffffff;
+  --card-foreground: #1A1A2E;
+  --popover: #ffffff;
+  --popover-foreground: #1A1A2E;
+  --primary: #0D4F4F;
+  --primary-foreground: #ffffff;
+  --secondary: #E8F5E9;
+  --secondary-foreground: #0D4F4F;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #00E676;
+  --accent-foreground: #0D4F4F;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #00E676;
+  --chart-1: #0D4F4F;
+  --chart-2: #00E676;
+  --chart-3: #00BCD4;
+  --chart-4: #0D4F4F;
+  --chart-5: #00E676;
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
@@ -133,40 +133,6 @@ html {
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
 }
 
 @layer base {
@@ -179,4 +145,215 @@ html {
   html {
     @apply font-sans;
   }
+}
+
+/* SmartVelo custom slider styles */
+.sv-slider-track {
+  height: 6px;
+  border-radius: 3px;
+  background: #e2e8f0;
+  position: relative;
+}
+
+.sv-slider-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #0D4F4F, #00E676);
+  transition: width 0.15s ease;
+}
+
+.sv-slider-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #00E676;
+  border: 3px solid #0D4F4F;
+  cursor: grab;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 2px 6px rgba(0, 230, 118, 0.3);
+}
+
+.sv-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 2px 12px rgba(0, 230, 118, 0.5);
+}
+
+.sv-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.1);
+  box-shadow: 0 2px 16px rgba(0, 230, 118, 0.6);
+}
+
+/* Smooth transitions for interactive elements */
+.sv-transition {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Card hover effect */
+.sv-card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sv-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(13, 79, 79, 0.12);
+}
+
+/* Pedaling animation */
+@keyframes pedaling {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+.pedal-eco {
+  animation: pedaling 1.2s ease-in-out infinite;
+}
+
+.pedal-tour {
+  animation: pedaling 0.9s ease-in-out infinite;
+}
+
+.pedal-sport {
+  animation: pedaling 0.6s ease-in-out infinite;
+}
+
+.pedal-turbo {
+  animation: pedaling 0.4s ease-in-out infinite;
+}
+
+.pedal-emtb {
+  animation: pedaling 0.5s ease-in-out infinite;
+}
+
+/* Wind particles */
+@keyframes wind-blow {
+  0% { transform: translateX(100px) translateY(0px); opacity: 0; }
+  20% { opacity: 0.8; }
+  80% { opacity: 0.6; }
+  100% { transform: translateX(-100px) translateY(-20px); opacity: 0; }
+}
+
+@keyframes wind-blow-reverse {
+  0% { transform: translateX(-100px) translateY(0px); opacity: 0; }
+  20% { opacity: 0.6; }
+  80% { opacity: 0.4; }
+  100% { transform: translateX(100px) translateY(20px); opacity: 0; }
+}
+
+.wind-particle {
+  position: absolute;
+  width: 30px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 188, 212, 0.6), transparent);
+  border-radius: 1px;
+  animation: wind-blow 2s linear infinite;
+}
+
+/* Snow animation */
+@keyframes snowfall {
+  0% { transform: translateY(-10px) rotate(0deg); opacity: 0; }
+  20% { opacity: 0.9; }
+  100% { transform: translateY(200px) rotate(360deg); opacity: 0; }
+}
+
+.snowflake {
+  position: absolute;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  animation: snowfall linear infinite;
+  pointer-events: none;
+}
+
+/* Leaf animation for autumn */
+@keyframes leaf-fall {
+  0% { transform: translateX(0) translateY(0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.8; }
+  50% { transform: translateX(40px) translateY(80px) rotate(180deg); }
+  100% { transform: translateX(-20px) translateY(200px) rotate(360deg); opacity: 0; }
+}
+
+.leaf-particle {
+  position: absolute;
+  font-size: 14px;
+  animation: leaf-fall linear infinite;
+  pointer-events: none;
+}
+
+/* Gauge animation */
+@keyframes gauge-fill {
+  from { stroke-dashoffset: 440; }
+}
+
+.gauge-circle-animate {
+  animation: gauge-fill 1s ease-out forwards;
+}
+
+/* Range number animation */
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.range-number-animate {
+  animation: count-up 0.3s ease-out;
+}
+
+/* Custom selection card styles */
+.sv-select-card {
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: white;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  user-select: none;
+}
+
+.sv-select-card:hover {
+  border-color: #00BCD4;
+  background: rgba(0, 188, 212, 0.04);
+}
+
+.sv-select-card.active {
+  border-color: #00E676;
+  background: rgba(0, 230, 118, 0.08);
+  color: #0D4F4F;
+  box-shadow: 0 0 0 1px #00E676;
+}
+
+/* Season overlays */
+.season-spring {
+  background: linear-gradient(180deg, rgba(129, 199, 132, 0.1) 0%, rgba(76, 175, 80, 0.05) 100%);
+}
+
+.season-summer {
+  background: linear-gradient(180deg, rgba(255, 235, 59, 0.08) 0%, rgba(255, 193, 7, 0.04) 100%);
+}
+
+.season-autumn {
+  background: linear-gradient(180deg, rgba(255, 152, 0, 0.1) 0%, rgba(255, 87, 34, 0.05) 100%);
+}
+
+.season-winter {
+  background: linear-gradient(180deg, rgba(144, 202, 249, 0.15) 0%, rgba(66, 165, 245, 0.08) 100%);
+}
+
+/* Terrain ground gradients */
+.terrain-flat {
+  background: linear-gradient(180deg, transparent 60%, rgba(76, 175, 80, 0.2) 60%, rgba(56, 142, 60, 0.3) 100%);
+}
+
+.terrain-slight {
+  background: linear-gradient(180deg, transparent 50%, rgba(139, 195, 74, 0.2) 50%, rgba(104, 159, 56, 0.3) 100%);
+}
+
+.terrain-hilly {
+  background: linear-gradient(180deg, transparent 45%, rgba(141, 110, 99, 0.15) 45%, rgba(121, 85, 72, 0.25) 100%);
+}
+
+.terrain-mountain {
+  background: linear-gradient(180deg, transparent 40%, rgba(121, 85, 72, 0.15) 40%, rgba(93, 64, 55, 0.3) 100%);
 }
