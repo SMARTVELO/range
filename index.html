@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartVélo Range Assistant</title>
+<link rel="icon" href="public/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f6f5f2;
+    --surface: #edecea;
+    --border: #ddd9d3;
+    --text: #1a1916;
+    --text-dim: #6b6660;
+    --text-muted: #b0aaa2;
+    --accent: oklch(0.62 0.17 155);
+    --accent-dim: oklch(0.45 0.10 155);
+    --accent-on: #fff;
+    --mono: 'DM Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  .dark {
+    --bg: #0a0a0a;
+    --surface: #161616;
+    --border: #2c2a27;
+    --text: #ece8e2;
+    --text-dim: #a39d94;
+    --text-muted: #706b64;
+    --accent: oklch(0.72 0.17 155);
+    --accent-dim: oklch(0.50 0.10 155);
+    --accent-on: #0a0a0a;
+  }
+
+  html { font-size: 16px; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    outline: none;
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 0 1px var(--accent);
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 0 1px var(--accent);
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+
+const BIKES = {
+  S: { label: 'Model S', frameKg: 33, aeroFactor: 1.0, maxSidebags: 2 },
+  M: { label: 'Model M', frameKg: 34, aeroFactor: 1.02, maxSidebags: 2 },
+  L: { label: 'Model L', frameKg: 38, aeroFactor: 1.04, maxSidebags: 4 },
+};
+
+const BATTERIES = {
+  528: { wh: 528, voltage: 36, kg: 4.7 },
+  720: { wh: 720, voltage: 48, kg: 6.4 },
+};
+
+const BASE_CONSUMPTION = 10.51;
+
+function calcRange({ bikeKey, batteryKey, topbox, sidebags, riderWeight, cargoWeight, mode, speed }) {
+  const bike = BIKES[bikeKey];
+  const battery = BATTERIES[batteryKey];
+  const accWeight = (topbox ? 5 : 0) + sidebags * 2;
+  const totalWeight = bike.frameKg + battery.kg + riderWeight + cargoWeight + accWeight;
+
+  const weightFactor = Math.pow(totalWeight / 120, 0.22);
+  const speedFactor = Math.pow(speed / 25, 0.8);
+  const modeMult = { Eco: 0.9, Standard: 1.0, Boost: 1.1 }[mode];
+  const batteryEfficiency = batteryKey === 528 ? 1.04 : 1.0;
+
+  const terrainFactor = 1.0;
+  const surfaceFactor = 1.0;
+  const windFactor = 1.0;
+  const seasonFactor = 0.97;
+  const stopGoFactor = 1.03;
+
+  const consumption =
+    BASE_CONSUMPTION * modeMult * weightFactor * speedFactor *
+    terrainFactor * surfaceFactor * windFactor * seasonFactor *
+    stopGoFactor * bike.aeroFactor * batteryEfficiency;
+
+  return battery.wh / consumption;
+}
+
+function useAnimatedNumber(target, duration = 400) {
+  const [display, setDisplay] = React.useState(target);
+  const animRef = React.useRef(null);
+  const currentRef = React.useRef(target);
+
+  React.useEffect(() => {
+    const start = currentRef.current;
+    const diff = target - start;
+    if (Math.abs(diff) < 0.01) { setDisplay(target); currentRef.current = target; return; }
+    const startTime = performance.now();
+    if (animRef.current) cancelAnimationFrame(animRef.current);
+
+    function tick(now) {
+      const t = Math.min((now - startTime) / duration, 1);
+      const ease = 1 - Math.pow(1 - t, 3);
+      const val = start + diff * ease;
+      currentRef.current = val;
+      setDisplay(val);
+      if (t < 1) animRef.current = requestAnimationFrame(tick);
+    }
+    animRef.current = requestAnimationFrame(tick);
+    return () => { if (animRef.current) cancelAnimationFrame(animRef.current); };
+  }, [target, duration]);
+
+  return display;
+}
+
+function SegmentedControl({ options, value, onChange, small }) {
+  const segStyles = {
+    display: 'flex',
+    gap: '2px',
+    background: 'var(--surface)',
+    borderRadius: '6px',
+    padding: '2px',
+    border: '1px solid var(--border)',
+  };
+  const btnBase = {
+    flex: 1,
+    padding: small ? '6px 10px' : '10px 16px',
+    border: 'none',
+    background: 'transparent',
+    color: 'var(--text-dim)',
+    fontFamily: 'var(--mono)',
+    fontSize: small ? '11px' : '13px',
+    fontWeight: 400,
+    cursor: 'pointer',
+    borderRadius: '4px',
+    transition: 'all 0.2s',
+    letterSpacing: '0.02em',
+    whiteSpace: 'nowrap',
+  };
+  const activeBtn = {
+    ...btnBase,
+    background: 'var(--accent)',
+    color: 'var(--accent-on)',
+    fontWeight: 500,
+  };
+
+  return (
+    <div style={segStyles}>
+      {options.map(opt => (
+        <button
+          key={opt.value}
+          style={opt.value === value ? activeBtn : btnBase}
+          onClick={() => onChange(opt.value)}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function SliderInput({ label, value, min, max, step, unit, onChange }) {
+  const pct = ((value - min) / (max - min)) * 100;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+        <span style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</span>
+        <span style={{ fontFamily: 'var(--mono)', fontSize: '15px', color: 'var(--text)', fontWeight: 500 }}>
+          {value}<span style={{ color: 'var(--text-dim)', fontSize: '11px', marginLeft: '3px' }}>{unit}</span>
+        </span>
+      </div>
+      <div style={{ position: 'relative' }}>
+        <div style={{
+          position: 'absolute', top: '50%', left: 0, height: '2px', width: `${pct}%`,
+          background: 'var(--accent)', borderRadius: '1px', transform: 'translateY(-50%)', pointerEvents: 'none', zIndex: 1,
+        }}></div>
+        <input
+          type="range" min={min} max={max} step={step} value={value}
+          onChange={e => onChange(Number(e.target.value))}
+          style={{ position: 'relative', zIndex: 2 }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function Toggle({ label, checked, onChange }) {
+  return (
+    <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
+      <span style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>{label}</span>
+      <div
+        onClick={() => onChange(!checked)}
+        style={{
+          width: '40px', height: '22px', borderRadius: '11px',
+          background: checked ? 'var(--accent)' : 'var(--border)',
+          position: 'relative', transition: 'background 0.2s', cursor: 'pointer',
+        }}
+      >
+        <div style={{
+          width: '16px', height: '16px', borderRadius: '50%',
+          background: checked ? 'var(--accent-on)' : 'var(--text-dim)',
+          position: 'absolute', top: '3px',
+          left: checked ? '21px' : '3px',
+          transition: 'left 0.2s, background 0.2s',
+        }}></div>
+      </div>
+    </label>
+  );
+}
+
+function InputGroup({ title, children }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{
+        fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--text-muted)',
+        textTransform: 'uppercase', letterSpacing: '0.15em',
+        borderBottom: '1px solid var(--border)', paddingBottom: '8px',
+      }}>{title}</div>
+      {children}
+    </div>
+  );
+}
+
+function App() {
+  const [bikeKey, setBikeKey] = React.useState('L');
+  const [batteryKey, setBatteryKey] = React.useState(720);
+  const [topbox, setTopbox] = React.useState(false);
+  const [sidebags, setSidebags] = React.useState(0);
+  const [riderWeight, setRiderWeight] = React.useState(75);
+  const [cargoWeight, setCargoWeight] = React.useState(0);
+  const [mode, setMode] = React.useState('Boost');
+  const [speed, setSpeed] = React.useState(25);
+  const [unit, setUnit] = React.useState('km');
+  const [dark, setDark] = React.useState(() => {
+    if (typeof localStorage !== 'undefined') return localStorage.getItem('sv-dark') === '1';
+    return false;
+  });
+
+  React.useEffect(() => {
+    document.documentElement.classList.toggle('dark', dark);
+    localStorage.setItem('sv-dark', dark ? '1' : '0');
+  }, [dark]);
+
+  React.useEffect(() => {
+    const maxBags = BIKES[bikeKey].maxSidebags;
+    if (sidebags > maxBags) setSidebags(maxBags);
+  }, [bikeKey]);
+
+  const rangeKm = calcRange({ bikeKey, batteryKey, topbox, sidebags, riderWeight, cargoWeight, mode, speed });
+  const rangeDisplay = unit === 'km' ? rangeKm : rangeKm * 0.621371;
+  const animatedRange = useAnimatedNumber(rangeDisplay, 350);
+
+  const maxBags = BIKES[bikeKey].maxSidebags;
+  const sidebagOptions = [{ value: 0, label: '0' }, { value: 2, label: '2' }];
+  if (maxBags === 4) sidebagOptions.push({ value: 4, label: '4' });
+
+  const rangePct = Math.min((rangeDisplay / (unit === 'km' ? 80 : 50)) * 100, 100);
+
+  const pageStyles = {
+    minHeight: '100dvh',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '24px 16px 48px',
+    maxWidth: '480px',
+    margin: '0 auto',
+  };
+
+  return (
+    <div style={pageStyles}>
+      <header style={{
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        width: '100%', marginBottom: '48px', paddingTop: '8px',
+      }}>
+        <div style={{ fontFamily: 'var(--sans)', fontSize: '13px', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-dim)' }}>
+          Smart<span style={{ color: 'var(--text)' }}>vélo</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{ fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--text-muted)', letterSpacing: '0.08em' }}>OKAWA AP70</span>
+          <button onClick={() => setDark(!dark)} style={{
+            background: 'none', border: '1px solid var(--border)', borderRadius: '6px',
+            padding: '4px 8px', cursor: 'pointer', fontFamily: 'var(--mono)', fontSize: '11px',
+            color: 'var(--text-dim)', transition: 'all 0.2s',
+          }}>{dark ? '☀' : '☾'}</button>
+        </div>
+      </header>
+
+      <div style={{
+        width: '100%', textAlign: 'center', marginBottom: '48px',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px',
+      }}>
+        <div style={{
+          fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--text-muted)',
+          textTransform: 'uppercase', letterSpacing: '0.2em',
+        }}>
+          Estimated Range
+        </div>
+
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: '8px' }}>
+          <span style={{
+            fontFamily: 'var(--mono)', fontSize: 'clamp(72px, 18vw, 120px)',
+            fontWeight: 300, lineHeight: 1, color: 'var(--text)',
+            letterSpacing: '-0.04em',
+            transition: 'color 0.3s',
+          }}>
+            {Math.round(animatedRange)}
+          </span>
+          <span style={{
+            fontFamily: 'var(--mono)', fontSize: '18px', fontWeight: 400,
+            color: 'var(--text-dim)', letterSpacing: '0.05em',
+          }}>
+            {unit}
+          </span>
+        </div>
+
+        <div style={{
+          width: '200px', height: '2px', background: 'var(--border)',
+          borderRadius: '1px', overflow: 'hidden', marginTop: '4px',
+        }}>
+          <div style={{
+            height: '100%', width: `${rangePct}%`,
+            background: 'var(--accent)',
+            borderRadius: '1px',
+            transition: 'width 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+          }}></div>
+        </div>
+
+        <div style={{
+          fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--text-muted)',
+          marginTop: '2px',
+        }}>
+          {Math.round(animatedRange * (unit === 'km' ? 1 : 1.60934) / speed * 60)} min at {speed} km/h
+        </div>
+      </div>
+
+      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '32px' }}>
+
+        <InputGroup title="Configuration">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <span style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Frame</span>
+            <SegmentedControl
+              options={[
+                { value: 'S', label: 'S · 33 kg' },
+                { value: 'M', label: 'M · 34 kg' },
+                { value: 'L', label: 'L · 38 kg' },
+              ]}
+              value={bikeKey} onChange={setBikeKey}
+            />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <span style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Battery</span>
+            <SegmentedControl
+              options={[
+                { value: 528, label: '528 Wh · 36V' },
+                { value: 720, label: '720 Wh · 48V' },
+              ]}
+              value={batteryKey} onChange={setBatteryKey}
+            />
+          </div>
+        </InputGroup>
+
+        <InputGroup title="Accessories">
+          <Toggle label="Topbox" checked={topbox} onChange={setTopbox} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <span style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              Sidebags
+            </span>
+            <SegmentedControl small options={sidebagOptions.map(o => ({ value: o.value, label: String(o.label) }))} value={sidebags} onChange={setSidebags} />
+          </div>
+        </InputGroup>
+
+        <InputGroup title="Rider">
+          <SliderInput label="Weight" value={riderWeight} min={50} max={130} step={1} unit="kg" onChange={setRiderWeight} />
+          <SliderInput label="Cargo" value={cargoWeight} min={0} max={100} step={1} unit="kg" onChange={setCargoWeight} />
+        </InputGroup>
+
+        <InputGroup title="Ride">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <span style={{ fontFamily: 'var(--mono)', fontSize: '11px', color: 'var(--text-dim)', textTransform: 'uppercase', letterSpacing: '0.1em' }}>Assist Mode</span>
+            <SegmentedControl
+              options={[
+                { value: 'Eco', label: 'Eco' },
+                { value: 'Standard', label: 'Std' },
+                { value: 'Boost', label: 'Boost' },
+              ]}
+              value={mode} onChange={setMode}
+            />
+          </div>
+          <SliderInput label="Speed" value={speed} min={20} max={25} step={1} unit="km/h" onChange={setSpeed} />
+        </InputGroup>
+
+        <InputGroup title="Display">
+          <SegmentedControl small
+            options={[
+              { value: 'km', label: 'Kilometers' },
+              { value: 'mi', label: 'Miles' },
+            ]}
+            value={unit} onChange={setUnit}
+          />
+        </InputGroup>
+      </div>
+
+      <footer style={{
+        marginTop: '56px', width: '100%', textAlign: 'center',
+        fontFamily: 'var(--mono)', fontSize: '10px', color: 'var(--text-muted)',
+        lineHeight: 1.6, letterSpacing: '0.04em',
+      }}>
+        Flat terrain · Good asphalt · No wind · Summer<br />
+        Estimates vary with real-world conditions
+      </footer>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>
