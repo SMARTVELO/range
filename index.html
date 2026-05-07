@@ -86,7 +86,7 @@
 
 const BIKES = {
   S: { label: 'Model S', frameKg: 33, aeroFactor: 1.0, maxSidebags: 2 },
-  M: { label: 'Model M', frameKg: 34, aeroFactor: 1.02, maxSidebags: 2 },
+  M: { label: 'Model M', frameKg: 34.2, aeroFactor: 1.02, maxSidebags: 2 },
   L: { label: 'Model L', frameKg: 38, aeroFactor: 1.04, maxSidebags: 4 },
 };
 
@@ -377,7 +377,7 @@ function App() {
             <SegmentedControl
               options={[
                 { value: 'S', label: 'S · 33 kg' },
-                { value: 'M', label: 'M · 34 kg' },
+                { value: 'M', label: 'M · 34.2 kg' },
                 { value: 'L', label: 'L · 38 kg' },
               ]}
               value={bikeKey} onChange={setBikeKey}
